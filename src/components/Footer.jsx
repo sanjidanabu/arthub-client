@@ -1,7 +1,17 @@
+'use client';
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from 'react-icons/fa';
 
 const Footer = () => {
+  const pathname = usePathname();
+
+ 
+  if (pathname.includes('dashboard')) {
+    return null;
+  }
+
   return (
     <footer className="bg-slate-950 text-white pt-20 pb-10 px-6">
       
@@ -21,7 +31,7 @@ const Footer = () => {
           </div>
         </div>
 
-        
+       
         <div className="md:col-span-4 grid grid-cols-2 gap-8">
           <div>
             <h4 className="font-semibold mb-6">Marketplace</h4>
@@ -55,7 +65,7 @@ const Footer = () => {
         </div>
       </div>
 
-      
+     
       <div className="max-w-7xl mx-auto mt-10 text-center text-slate-500 text-xs">
         © {new Date().getFullYear()} ArtHub Inc. All rights reserved.
       </div>

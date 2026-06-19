@@ -27,7 +27,7 @@ export default function RootLayout({ children }) {
     >
       <body >
         <Navbar/>
-        <main className="max-w-7xl mx-auto px-2 min-h-screen">
+        <main className=" px-2 min-h-screen">
           {children}
           <Toaster position="top-center" reverseOrder={false}/>
         </main>

@@ -9,21 +9,19 @@ import { authClient } from '@/lib/auth-client';
 import toast from 'react-hot-toast'; 
 
 const Navbar = () => {
-  
   const { data: session, isPending } = authClient.useSession();
   const router = useRouter();
-  
+  const pathname = usePathname();
   
   const isLoggedIn = !!session; 
   
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
-  const pathname = usePathname();
 
   const isActive = (path) => pathname === path;
 
- 
+  
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -34,7 +32,6 @@ const Navbar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  
   const handleLogout = async () => {
     const loadingToast = toast.loading("Logging out...");
     try {
@@ -56,26 +53,27 @@ const Navbar = () => {
     }
   };
 
+ 
+  if (pathname.includes('dashboard')) {
+    return null;
+  }
+
   return (
     <nav className="bg-white shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           
-         
           <div className="flex-shrink-0">
             <Link href="/" className="text-2xl font-bold text-indigo-600">ArtHub</Link>
           </div>
 
-          
           <div className="hidden md:flex space-x-8">
             <Link href="/browse" className={`font-medium ${isActive('/browse') ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-600 hover:text-indigo-600'}`}>Browse Artworks</Link>
             <Link href="/dashboard" className={`font-medium ${isActive('/dashboard') ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-600 hover:text-indigo-600'}`}>Dashboard</Link>
           </div>
 
-         
           <div className="hidden md:flex items-center space-x-4">
             {isPending ? (
-             
               <div className="w-8 h-8 rounded-full bg-slate-200 animate-pulse"></div>
             ) : isLoggedIn ? (
               <div className="relative" ref={dropdownRef}>
@@ -83,7 +81,6 @@ const Navbar = () => {
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)} 
                   className="w-10 h-10 rounded-full border-2 border-indigo-500 overflow-hidden flex items-center justify-center focus:outline-none"
                 >
-                 
                   <img 
                     src={session?.user?.image || "/avatar-placeholder.png"} 
                     alt={session?.user?.name || "User Profile"} 
@@ -113,7 +110,6 @@ const Navbar = () => {
             )}
           </div>
 
-         
           <div className="md:hidden flex items-center">
             <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-2xl text-gray-600 focus:outline-none">
               {isMobileMenuOpen ? <HiX /> : <HiMenu />}
@@ -122,7 +118,6 @@ const Navbar = () => {
         </div>
       </div>
 
-      
       {isMobileMenuOpen && (
         <div className="md:hidden bg-white border-t p-4 space-y-4">
           <Link href="/browse" onClick={() => setIsMobileMenuOpen(false)} className="block text-gray-600 hover:text-indigo-600">Browse Artworks</Link>
