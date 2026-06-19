@@ -22,7 +22,6 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    
     const loadingToast = toast.loading("Signing in...");
 
     try {
@@ -33,7 +32,6 @@ export default function LoginPage() {
 
       if (signInError) {
         toast.dismiss(loadingToast);
-        
         toast.error(signInError.message || "Invalid email or password!");
         console.error("Login error:", signInError);
         return;
@@ -44,7 +42,6 @@ export default function LoginPage() {
       
       console.log('Login Data:', signInData);
 
-      
       setTimeout(() => {
         router.push('/');
       }, 1200);
@@ -56,17 +53,29 @@ export default function LoginPage() {
     }
   };
 
+  
+  const handleGoogleSignIn = async () => {
+    const loadingToast = toast.loading("Connecting to Google...");
+    try {
+      await authClient.signIn.social({
+        provider: 'google',
+        callbackURL: '/' 
+      });
+    } catch (err) {
+      toast.dismiss(loadingToast);
+      toast.error("Google sign in failed. Please try again.");
+      console.error("Google sign in error:", err);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 relative overflow-hidden font-sans">
-      
       
       <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-500/10 rounded-full blur-[100px]"></div>
       <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-sky-400/10 rounded-full blur-[100px]"></div>
 
-      
       <div className="relative w-full max-w-md bg-white border border-slate-200/80 rounded-3xl p-8 sm:p-10 shadow-xl shadow-slate-200/40 z-10">
         
-       
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-slate-900 tracking-tight">
             Welcome Back
@@ -77,7 +86,6 @@ export default function LoginPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          
           
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -94,7 +102,6 @@ export default function LoginPage() {
             />
           </div>
 
-          
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <HiOutlineLockClosed className="h-5 w-5 text-slate-400" />
@@ -110,7 +117,6 @@ export default function LoginPage() {
             />
           </div>
 
-         
           <button
             type="submit"
             className="w-full py-3.5 mt-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold tracking-wide shadow-lg shadow-blue-500/20 transition-all active:scale-[0.98]"
@@ -119,7 +125,6 @@ export default function LoginPage() {
           </button>
         </form>
 
-        
         <div className="relative my-6 text-center">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-slate-200"></div>
@@ -131,6 +136,7 @@ export default function LoginPage() {
 
        
         <button
+          onClick={handleGoogleSignIn}
           type="button"
           className="w-full flex items-center justify-center gap-3 py-3 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl font-semibold shadow-sm transition-all active:scale-[0.98]"
         >
@@ -138,7 +144,6 @@ export default function LoginPage() {
           Continue with Google
         </button>
 
-       
         <p className="mt-8 text-center text-sm font-medium text-slate-500">
           Dont have an account?{' '}
           <Link href="/signup" className="font-bold text-blue-600 hover:text-blue-500 transition">

@@ -11,8 +11,8 @@ export default function SignupPage() {
   const router = useRouter();
   const { register, handleSubmit, formState: { errors }, watch } = useForm();
 
+ 
   const onSubmit = async (data) => {
-    
     const loadingToast = toast.loading("Creating your account...");
 
     try {
@@ -25,19 +25,14 @@ export default function SignupPage() {
       });
 
       if (signUpError) {
-        
         toast.dismiss(loadingToast);
         toast.error(signUpError.message || "Sign up failed! Please try again.");
         console.error("Sign up error:", signUpError);
         return;
       }
 
-      
       toast.dismiss(loadingToast);
       toast.success("Account created successfully! Redirecting...");
-      
-      console.log("Success:", signUpData);
-      
       
       setTimeout(() => {
         router.push('/login'); 
@@ -47,6 +42,21 @@ export default function SignupPage() {
       toast.dismiss(loadingToast);
       toast.error("Something went wrong. Please check your connection.");
       console.error("Something went wrong:", err);
+    }
+  };
+
+ 
+  const handleGoogleSignIn = async () => {
+    const loadingToast = toast.loading("Connecting to Google...");
+    try {
+      await authClient.signIn.social({
+        provider: 'google',
+        callbackURL: '/dashboard' 
+      });
+    } catch (err) {
+      toast.dismiss(loadingToast);
+      toast.error("Google sign in failed. Please try again.");
+      console.error("Google sign in error:", err);
     }
   };
 
@@ -71,7 +81,6 @@ export default function SignupPage() {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           
-          
           <div>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -89,7 +98,6 @@ export default function SignupPage() {
             )}
           </div>
 
-         
           <div>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -107,7 +115,6 @@ export default function SignupPage() {
             )}
           </div>
 
-         
           <div>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -125,7 +132,6 @@ export default function SignupPage() {
             )}
           </div>
 
-         
           <div>
             <div className="relative">
               <select
@@ -146,9 +152,7 @@ export default function SignupPage() {
             )}
           </div>
 
-          
           <div className="grid grid-cols-2 gap-4">
-           
             <div>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -170,7 +174,6 @@ export default function SignupPage() {
               )}
             </div>
 
-            
             <div>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -209,7 +212,9 @@ export default function SignupPage() {
           </span>
         </div>
 
+        
         <button
+          onClick={handleGoogleSignIn}
           type="button"
           className="w-full flex items-center justify-center gap-3 py-3 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl font-semibold shadow-sm transition-all active:scale-[0.98]"
         >
