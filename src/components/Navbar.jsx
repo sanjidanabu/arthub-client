@@ -21,6 +21,9 @@ const Navbar = () => {
 
   const isActive = (path) => pathname === path;
 
+ 
+  const dashboardUrl = session?.user?.role ? `/dashboard/${session.user.role}` : '/dashboard';
+  
   
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -53,7 +56,6 @@ const Navbar = () => {
     }
   };
 
- 
   if (pathname.includes('dashboard')) {
     return null;
   }
@@ -69,7 +71,9 @@ const Navbar = () => {
 
           <div className="hidden md:flex space-x-8">
             <Link href="/browse" className={`font-medium ${isActive('/browse') ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-600 hover:text-indigo-600'}`}>Browse Artworks</Link>
-            <Link href="/dashboard" className={`font-medium ${isActive('/dashboard') ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-600 hover:text-indigo-600'}`}>Dashboard</Link>
+            
+           
+            <Link href={dashboardUrl} className={`font-medium ${isActive(dashboardUrl) ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-600 hover:text-indigo-600'}`}>Dashboard</Link>
           </div>
 
           <div className="hidden md:flex items-center space-x-4">
@@ -121,7 +125,9 @@ const Navbar = () => {
       {isMobileMenuOpen && (
         <div className="md:hidden bg-white border-t p-4 space-y-4">
           <Link href="/browse" onClick={() => setIsMobileMenuOpen(false)} className="block text-gray-600 hover:text-indigo-600">Browse Artworks</Link>
-          <Link href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="block text-gray-600 hover:text-indigo-600">Dashboard</Link>
+          
+         
+          <Link href={dashboardUrl} onClick={() => setIsMobileMenuOpen(false)} className="block text-gray-600 hover:text-indigo-600">Dashboard</Link>
           <hr />
           
           {isPending ? (
