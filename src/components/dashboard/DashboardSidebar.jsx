@@ -8,7 +8,7 @@ import {
   PlusCircle, 
   DollarSign, 
   Users, 
-  CreditCard,
+  
   Paintbrush 
 } from "lucide-react";
 import { headers } from "next/headers";
@@ -27,7 +27,7 @@ export default async function DashboardSidebar() {
       { icon: History, label: "Purchase History", link: "/dashboard/buyer" },
       { icon: ImageIcon, label: "Bought Artworks", link: "/dashboard/buyer/bought-artworks" },
       { icon: Gear, label: "Profile Management", link: "/dashboard/buyer/profile" },
-      { icon: CreditCard, label: "Subscription Overview", link: "/dashboard/buyer/subscription" },
+      { icon: DollarSign, label: "Subscription Overview", link: "/dashboard/buyer/subscription" },
     ],
     artist: [
       { icon: Paintbrush, label: "Manage Artworks", link: "/dashboard/artist" },
