@@ -92,7 +92,7 @@ export default function AddArtwork() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             
-            {/* Title */}
+           
             <div className="flex flex-col">
               <label className="mb-2 text-sm font-semibold text-gray-700">Title</label>
               <input

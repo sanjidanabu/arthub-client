@@ -1,52 +1,72 @@
-import {  NextResponse } from "next/server";
-
-
-import { headers } from 'next/headers'
+import { NextResponse } from 'next/server';
 import { stripe } from "@/lib/stripe";
 import { auth } from "@/lib/auth";
+import { headers } from 'next/headers';
 
-
-
-export async function POST() {
+export async function POST(req) {
   try {
-    const headersList = await headers()
-    const origin = headersList.get('origin')
+    const body = await req.json();
+    const { artwork } = body; 
 
+    
     const userSession = await auth.api.getSession({
-        headers: await  headers()
-    })
+        headers: await headers()
+    });
 
-    const user = userSession?.user
+    const user = userSession?.user;
 
-    const PRICE_ID= "prod_UjqRJOu1l0qUd2"
+    
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized! Please login first." }, { status: 401 });
+    }
 
-   
+    
+    if (user.role !== "buyer") {
+      return NextResponse.json(
+        { error: `Access denied! Your role is '${user.role}'. Only users with the 'buyer' role can purchase artworks.` }, 
+        { status: 403 }
+      );
+    }
+
+    const headersList = await headers();
+    const origin = headersList.get('origin');
+
+    
     const session = await stripe.checkout.sessions.create({
-        customer_email: user?.email,
+      payment_method_types: ['card'],
+      customer_email: user.email, 
       line_items: [
         {
-          // Provide the exact Price ID (for example, price_1234) of the product you want to sell
-          price: PRICE_ID,
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: artwork.title,
+              images: artwork.imageUrl ? [artwork.imageUrl] : [],
+            },
+            unit_amount: Math.round(artwork.price * 100), 
+          },
           quantity: 1,
         },
       ],
-      metadata:{
-        priceId: PRICE_ID,
-        userId: user.id,
-        userEmail: user.email
+      metadata: {
+        artworkId: artwork._id,
+        userId: user.id || user._id, 
+        userRole: user.role 
       },
-      mode: 'subcription',
-      success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
+      mode: 'payment', 
+      success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}&artworkId=${artwork._id}&userId=${user.id || user._id}`,
+      cancel_url: `${origin}/artwork/${artwork._id}`, 
     });
-    return NextResponse.redirect(session.url, 303)
+
+    return NextResponse.json({ url: session.url });
   } catch (err) {
     return NextResponse.json(
       { error: err.message },
       { status: err.statusCode || 500 }
-    )
+    );
   }
 }
 
 export async function GET(){
-    return NextResponse.json({message: "hello from subcription api route"})
+    return NextResponse.json({message: "Hello from Stripe payment api route"})
 }
