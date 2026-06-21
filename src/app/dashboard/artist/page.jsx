@@ -1,11 +1,12 @@
 
+import React from 'react';
 
-const ArtistHomepage = () => {
+const ArtistsHomepage = () => {
     return (
         <div>
-            artists
+            artists home page
         </div>
     );
 };
 
-export default ArtistHomepage;
+export default ArtistsHomepage;
