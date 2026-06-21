@@ -149,7 +149,7 @@ const BrowseArtworks = () => {
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
             {artworks.map((art) => (
-              <Link href={`/artworks/${art._id}`} key={art._id}>
+              <Link href={`/browse/${art._id}`} key={art._id}>
                 <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100 cursor-pointer h-full flex flex-col">
                   <div className="w-full h-48 sm:h-56 bg-gray-100 relative">
                     <img
