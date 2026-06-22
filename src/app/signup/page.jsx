@@ -51,7 +51,7 @@ export default function SignupPage() {
     try {
       await authClient.signIn.social({
         provider: 'google',
-        callbackURL: '/dashboard' 
+        callbackURL: '/login' 
       });
     } catch (err) {
       toast.dismiss(loadingToast);
