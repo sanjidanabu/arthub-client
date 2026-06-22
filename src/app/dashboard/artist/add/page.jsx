@@ -1,8 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation"; 
+
+import { useSession } from "@/lib/auth-client"; 
 
 export default function AddArtwork() {
+  const router = useRouter(); 
+  const { data: session, isPending } = useSession(); 
+  
   const [formData, setFormData] = useState({
     title: "",
     artistName: "", 
@@ -24,6 +30,13 @@ export default function AddArtwork() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    
+    if (!session?.user?.email) {
+      setMessage("You must be logged in to add artwork.");
+      return;
+    }
+
     setLoading(true);
     setMessage("");
 
@@ -41,10 +54,12 @@ export default function AddArtwork() {
       if (imgbbData.success) {
         const imageUrl = imgbbData.data.display_url;
 
+        
         const artworkData = {
           ...formData,
           price: parseFloat(formData.price),
           imageUrl,
+          artistEmail: session.user.email, 
           createdAt: new Date(),
         };
 
@@ -59,11 +74,15 @@ export default function AddArtwork() {
         const backendData = await backendResponse.json();
 
         if (backendData.insertedId) {
-          setMessage("Artwork successfully added!");
+          setMessage("Artwork successfully added! Redirecting...");
           
           setFormData({ title: "", artistName: "", description: "", price: "", category: "" });
           setImageFile(null);
           e.target.reset(); 
+
+          setTimeout(() => {
+            router.push("/browse"); 
+          }, 1500);
         }
       } else {
         setMessage("Image upload failed.");
@@ -76,12 +95,13 @@ export default function AddArtwork() {
     }
   };
 
+  
+  if (isPending) return <div className="text-center p-10 font-semibold">Loading authentication...</div>;
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-50 p-4 w-full">
       <div className="w-full max-w-2xl bg-white p-8 rounded-xl shadow-lg border border-gray-100">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-          Add New Artwork
-        </h2>
+        <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Add New Artwork</h2>
 
         {message && (
           <p className={`mb-4 text-center font-medium ${message.includes('successfully') ? 'text-green-600' : 'text-red-600'}`}>
@@ -91,45 +111,19 @@ export default function AddArtwork() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
-           
             <div className="flex flex-col">
               <label className="mb-2 text-sm font-semibold text-gray-700">Title</label>
-              <input
-                type="text"
-                name="title"
-                required
-                value={formData.title}
-                onChange={handleChange}
-                className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                placeholder="Enter artwork title"
-              />
+              <input type="text" name="title" required value={formData.title} onChange={handleChange} className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter artwork title" />
             </div>
 
-            
             <div className="flex flex-col">
               <label className="mb-2 text-sm font-semibold text-gray-700">Artist Name</label>
-              <input
-                type="text"
-                name="artistName"
-                required
-                value={formData.artistName}
-                onChange={handleChange}
-                className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                placeholder="Enter artist name"
-              />
+              <input type="text" name="artistName" required value={formData.artistName} onChange={handleChange} className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter artist name" />
             </div>
 
-           
             <div className="flex flex-col">
               <label className="mb-2 text-sm font-semibold text-gray-700">Category</label>
-              <select
-                name="category"
-                required
-                value={formData.category}
-                onChange={handleChange}
-                className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white transition-all"
-              >
+              <select name="category" required value={formData.category} onChange={handleChange} className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
                 <option value="" disabled>Select a category</option>
                 <option value="painting">Painting</option>
                 <option value="digital">Digital Art</option>
@@ -138,57 +132,23 @@ export default function AddArtwork() {
               </select>
             </div>
 
-           
             <div className="flex flex-col">
               <label className="mb-2 text-sm font-semibold text-gray-700">Price ($)</label>
-              <input
-                type="number"
-                name="price"
-                min="0"
-                step="0.01"
-                required
-                value={formData.price}
-                onChange={handleChange}
-                className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                placeholder="Enter price"
-              />
+              <input type="number" name="price" min="0" step="0.01" required value={formData.price} onChange={handleChange} className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter price" />
             </div>
           </div>
 
-          
           <div className="flex flex-col">
             <label className="mb-2 text-sm font-semibold text-gray-700">Description</label>
-            <textarea
-              name="description"
-              required
-              rows="4"
-              value={formData.description}
-              onChange={handleChange}
-              className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
-              placeholder="Describe your artwork..."
-            ></textarea>
+            <textarea name="description" required rows="4" value={formData.description} onChange={handleChange} className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" placeholder="Describe your artwork..."></textarea>
           </div>
 
-          
           <div className="flex flex-col">
             <label className="mb-2 text-sm font-semibold text-gray-700">Upload Image</label>
-            <input
-              type="file"
-              accept="image/*"
-              required
-              onChange={handleImageChange}
-              className="w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition-all cursor-pointer border border-gray-300 rounded-lg"
-            />
+            <input type="file" accept="image/*" required onChange={handleImageChange} className="w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer border border-gray-300 rounded-lg" />
           </div>
 
-          
-          <button
-            type="submit"
-            disabled={loading}
-            className={`w-full py-3 px-6 rounded-lg font-bold text-white transition-all ${
-              loading ? "bg-blue-300 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
-            }`}
-          >
+          <button type="submit" disabled={loading} className={`w-full py-3 px-6 rounded-lg font-bold text-white transition-all ${loading ? "bg-blue-300 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}`}>
             {loading ? "Adding Artwork..." : "Add Artwork"}
           </button>
         </form>
