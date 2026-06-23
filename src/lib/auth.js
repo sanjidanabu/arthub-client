@@ -28,5 +28,14 @@ export const auth = betterAuth({
             defaultValue: "free"
           }
         }
-      }
+      },
+      session: {
+    cookieCache: {
+      enabled: true,
+      strategy: "jwt",
+      maxAge: 60 * 24 * 30,
+    },
+  },
+
+  
 });

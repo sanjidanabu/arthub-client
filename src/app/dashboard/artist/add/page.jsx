@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 
 import { useSession } from "@/lib/auth-client"; 
 
+
 export default function AddArtwork() {
+  
   const router = useRouter(); 
   const { data: session, isPending } = useSession(); 
   
