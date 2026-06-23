@@ -8,11 +8,12 @@ export default function SalesHistoryPage() {
   const { data: session, isPending } = useSession();
   const [sales, setSales] = useState([]);
   const [loading, setLoading] = useState(true);
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
   useEffect(() => {
     
     if (session?.user?.email) {
-      fetch(`http://localhost:5000/api/artist-sales/${session.user.email}`)
+      fetch(`${baseUrl}/api/artist-sales/${session.user.email}`)
         .then((res) => res.json())
         .then((data) => {
           setSales(data);
@@ -23,7 +24,7 @@ export default function SalesHistoryPage() {
           setLoading(false);
         });
     }
-  }, [session]);
+  }, [session,baseUrl]);
 
   if (isPending || loading) {
     return (

@@ -9,6 +9,7 @@ function SubscriptionSuccessContent() {
   const sessionId = searchParams.get("session_id");
   const plan = searchParams.get("plan");
   const userId = searchParams.get("userId");
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   
   const [status, setStatus] = useState("Upgrading your account...");
 
@@ -16,7 +17,7 @@ function SubscriptionSuccessContent() {
     if (sessionId && plan && userId) {
       const updateUserPlan = async () => {
         try {
-          const res = await fetch("http://localhost:5000/api/update-user-plan", {
+          const res = await fetch(`${baseUrl}/api/update-user-plan`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ sessionId, plan, userId }),

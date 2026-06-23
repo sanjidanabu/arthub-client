@@ -4,10 +4,11 @@ import { useEffect, useState } from "react";
 export default function AdminTransactions() {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
  
   useEffect(() => {
-    fetch("http://localhost:5000/api/admin/transactions") 
+    fetch(`${baseUrl}/api/admin/transactions`) 
       .then((res) => res.json())
       .then((data) => {
         setTransactions(data);
@@ -17,7 +18,7 @@ export default function AdminTransactions() {
         console.error("Error fetching transactions:", err);
         setLoading(false);
       });
-  }, []);
+  }, [baseUrl]);
 
   if (loading) {
     return <p className="text-center p-10 text-gray-600 font-semibold">Loading Transactions...</p>;

@@ -13,26 +13,28 @@ const ArtworkDetails = () => {
   const [commentInput, setCommentInput] = useState("");
   const [loading, setLoading] = useState(true);
 
-  
   const { data: session, isPending: authLoading } = authClient.useSession();
   const user = session?.user; 
+
+  
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
   useEffect(() => {
     const fetchData = async () => {
       if (!id) return;
       setLoading(true);
       try {
-        const resArt = await fetch(`http://localhost:5000/api/artworks/${id}`);
+        const resArt = await fetch(`${baseUrl}/api/artworks/${id}`);
         const artData = await resArt.json();
         setArtwork(artData);
 
-        const resComm = await fetch(`http://localhost:5000/api/comments/${id}`);
+        const resComm = await fetch(`${baseUrl}/api/comments/${id}`);
         const commData = await resComm.json();
         setComments(commData);
 
         const currentUserId = user?.id || user?._id;
         if (currentUserId) {
-          const resPur = await fetch(`http://localhost:5000/api/check-purchase/${currentUserId}/${id}`);
+          const resPur = await fetch(`${baseUrl}/api/check-purchase/${currentUserId}/${id}`);
           const purData = await resPur.json();
           setHasPurchased(purData.hasPurchased);
         }
@@ -46,13 +48,13 @@ const ArtworkDetails = () => {
     if (!authLoading) {
       fetchData();
     }
-  }, [id, user, authLoading]);
+  }, [id, user, authLoading, baseUrl]); 
 
   const handlePostComment = async () => {
     if (!commentInput.trim() || !user) return;
     const currentUserId = user.id || user._id;
     
-    const res = await fetch(`http://localhost:5000/api/comments`, {
+    const res = await fetch(`${baseUrl}/api/comments`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ 
@@ -74,13 +76,13 @@ const ArtworkDetails = () => {
       return;
     }
 
-   
     if (user.role !== "buyer") {
       alert(`Your current role is '${user.role}'. Only users with the 'buyer' role are allowed to purchase.`);
       return;
     }
 
     try {
+      
       const res = await fetch("/api/subcription", { 
         method: "POST",
         headers: { "Content-Type": "application/json" },

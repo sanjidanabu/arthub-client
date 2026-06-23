@@ -8,6 +8,7 @@ const ProfileForm = ({ user }) => {
   const [name, setName] = useState(user?.name || "");
   const [image, setImage] = useState(user?.image || "");
   const [loading, setLoading] = useState(false);
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
   
   const handleImageUpload = async (e) => {
@@ -38,7 +39,7 @@ const ProfileForm = ({ user }) => {
   const handleUpdate = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:5000/api/users/${user.id || user._id}`, {
+      const res = await fetch(`${baseUrl}/api/users/${user.id || user._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, image }),

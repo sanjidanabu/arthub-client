@@ -8,6 +8,7 @@ const ArtistProfileForm = ({ user }) => {
   const [name, setName] = useState(user?.name || "");
   const [image, setImage] = useState(user?.image || "");
   const [loading, setLoading] = useState(false);
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
   
   const handleImageUpload = async (e) => {
@@ -42,7 +43,7 @@ const ArtistProfileForm = ({ user }) => {
     setLoading(true);
     try {
       
-      const res = await fetch(`http://localhost:5000/api/users/${user.id || user._id}`, {
+      const res = await fetch(`${baseUrl}/api/users/${user.id || user._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, image }),
@@ -67,7 +68,7 @@ const ArtistProfileForm = ({ user }) => {
     <div className="max-w-2xl mx-auto mt-10 p-8 bg-white shadow-lg rounded-xl border border-gray-100">
       <h1 className="text-2xl font-bold mb-6 text-gray-800">Artist Profile Settings</h1>
       
-      {/* Role Badge */}
+     
       <div className="mb-6">
         <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
           Account Type: Artist

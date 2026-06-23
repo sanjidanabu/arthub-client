@@ -18,7 +18,35 @@ const BrowseArtworks = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  const fetchArtworks = async () => {
+  // const fetchArtworks = async () => {
+  //   setLoading(true);
+  //   setError("");
+  //   try {
+  //     const queryParams = new URLSearchParams({
+  //       search,
+  //       category,
+  //       minPrice,
+  //       maxPrice,
+  //       sort,
+  //       page,
+  //       limit: 8,
+  //     });
+  //    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  //     const res = await fetch(`${baseUrl}/api/artworks?${queryParams}`);
+  //     if (!res.ok) throw new Error("Data fetching failed");
+      
+  //     const data = await res.json();
+  //     setArtworks(data.artworks);
+  //     setTotalPages(data.totalPages);
+  //   } catch (err) {
+  //     setError("Failed to load artworks. Please try again later."); 
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  useEffect(() => {
+    const fetchArtworks = async () => {
     setLoading(true);
     setError("");
     try {
@@ -31,8 +59,8 @@ const BrowseArtworks = () => {
         page,
         limit: 8,
       });
-
-      const res = await fetch(`http://localhost:5000/api/artworks?${queryParams}`);
+     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+      const res = await fetch(`${baseUrl}/api/artworks?${queryParams}`);
       if (!res.ok) throw new Error("Data fetching failed");
       
       const data = await res.json();
@@ -44,8 +72,6 @@ const BrowseArtworks = () => {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       fetchArtworks();
     }, 500);

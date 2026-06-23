@@ -9,6 +9,7 @@ function SuccessContent() {
   const sessionId = searchParams.get("session_id");
   const artworkId = searchParams.get("artworkId");
   const userId = searchParams.get("userId");
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   
   const [status, setStatus] = useState("Processing your payment...");
 
@@ -16,7 +17,7 @@ function SuccessContent() {
     if (sessionId && artworkId && userId) {
       const savePurchaseToDB = async () => {
         try {
-          const res = await fetch("http://localhost:5000/api/purchases", {
+          const res = await fetch(`${baseUrl}/api/purchases`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ sessionId, artworkId, userId }),
@@ -35,7 +36,7 @@ function SuccessContent() {
 
       savePurchaseToDB();
     }
-  }, [sessionId, artworkId, userId]);
+  }, [sessionId, artworkId, userId,baseUrl]);
 
   return (
     <div className="bg-white p-10 rounded-xl shadow-lg text-center max-w-lg">

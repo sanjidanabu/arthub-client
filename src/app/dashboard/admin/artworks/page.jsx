@@ -3,19 +3,19 @@ import { useEffect, useState } from "react";
 
 export default function AdminArtworks() {
   const [artworks, setArtworks] = useState([]); 
-
+ const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   
   useEffect(() => {
-    fetch("http://localhost:5000/api/admin/artworks") 
+    fetch(`${baseUrl}/api/admin/artworks`) 
       .then((res) => res.json())
       .then((data) => setArtworks(data)); 
-  }, []);
+  }, [baseUrl]);
 
   
   const handleDelete = (id) => {
     const proceed = confirm("Do you want to delete");
     if (proceed) {
-      fetch(`http://localhost:5000/api/artworks/${id}`, {
+      fetch(`${baseUrl}/api/artworks/${id}`, {
         method: "DELETE",
       })
         .then((res) => res.json())

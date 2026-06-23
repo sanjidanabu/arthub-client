@@ -8,19 +8,20 @@ const BoughtArtworks = () => {
   const { data: session } = authClient.useSession();
   const user = session?.user;
   const [boughtArtworks, setBoughtArtworks] = useState([]);
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
   useEffect(() => {
     const fetchBoughtArtworks = async () => {
       if (user) {
         const userId = user.id || user._id;
         
-        const res = await fetch(`http://localhost:5000/api/my-purchases/${userId}`);
+        const res = await fetch(`${baseUrl}/api/my-purchases/${userId}`);
         const data = await res.json();
         setBoughtArtworks(data);
       }
     };
     fetchBoughtArtworks();
-  }, [user]);
+  }, [user,baseUrl]);
 
   return (
     <div className="max-w-6xl mx-auto p-8">

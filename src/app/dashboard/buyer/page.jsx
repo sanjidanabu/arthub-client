@@ -9,18 +9,19 @@ const BuyerDashboard = () => {
   const { data: session } = authClient.useSession();
   const user = session?.user;
   const [purchases, setPurchases] = useState([]);
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
   useEffect(() => {
     const fetchPurchases = async () => {
       if (user) {
         const userId = user.id || user._id;
-        const res = await fetch(`http://localhost:5000/api/my-purchases/${userId}`);
+        const res = await fetch(`${baseUrl}/api/my-purchases/${userId}`);
         const data = await res.json();
         setPurchases(data);
       }
     };
     fetchPurchases();
-  }, [user]);
+  }, [user,baseUrl]);
 
   return (
     <div className="max-w-6xl mx-auto p-8">

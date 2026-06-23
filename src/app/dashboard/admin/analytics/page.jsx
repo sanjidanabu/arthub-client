@@ -7,16 +7,17 @@ const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8"];
 export default function AdminAnalytics() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/admin/analytics") 
+    fetch(`${baseUrl}/api/admin/analytics`) 
       .then((res) => res.json())
       .then((resData) => {
         setData(resData);
         setLoading(false);
       })
       .catch((err) => console.error(err));
-  }, []);
+  }, [baseUrl]);
 
   if (loading) return <p className="text-center p-10 font-semibold">Loading Dashboard Analytics...</p>;
 

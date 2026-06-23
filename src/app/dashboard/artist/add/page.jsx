@@ -62,8 +62,9 @@ export default function AddArtwork() {
           artistEmail: session.user.email, 
           createdAt: new Date(),
         };
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
-        const backendResponse = await fetch("http://localhost:5000/api/artworks", {
+        const backendResponse = await fetch(`${baseUrl}/api/artworks`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

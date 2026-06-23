@@ -1,15 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession } from "@/lib/auth-client"; 
+import { useSession } from "@/lib/auth-client";
 
 export default function ArtistDashboard() {
-  const { data: session, isPending } = useSession();
+  const { data: session } = useSession(); 
   const [artworks, setArtworks] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState("");
 
-  // Edit State
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({
     _id: "",
@@ -18,17 +16,17 @@ export default function ArtistDashboard() {
     category: "",
     price: "",
     description: "",
-    imageUrl: ""
+    imageUrl: "",
   });
   const [newImage, setNewImage] = useState(null);
   const [isUpdating, setIsUpdating] = useState(false);
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
- 
+  
   useEffect(() => {
     const fetchArtworks = async (email) => {
-      setIsLoading(true);
       try {
-        const res = await fetch(`http://localhost:5000/api/my-artworks/${email}`);
+        const res = await fetch(`${baseUrl}/api/my-artworks/${email}`);
         if (res.ok) {
           const data = await res.json();
           setArtworks(data);
@@ -36,24 +34,20 @@ export default function ArtistDashboard() {
       } catch (error) {
         console.error("Fetch error:", error);
         setMessage("Failed to load artworks.");
-      } finally {
-        setIsLoading(false);
       }
     };
 
     if (session?.user?.email) {
       fetchArtworks(session.user.email);
-    } else if (!isPending) {
-      isLoading(false);
     }
-  }, [session, isPending]); 
+  }, [session, baseUrl]);
 
- 
+  // ডিলিট হ্যান্ডলার
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this artwork?")) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/artworks/${id}`, {
+      const res = await fetch(`${baseUrl}/api/artworks/${id}`, {
         method: "DELETE",
       });
       const data = await res.json();
@@ -67,28 +61,19 @@ export default function ArtistDashboard() {
     }
   };
 
-  
+  // এডিট শুরু করার ফাংশন
   const startEditing = (artwork) => {
-    setEditForm({
-      _id: artwork._id,
-      title: artwork.title,
-      artistName: artwork.artistName,
-      category: artwork.category,
-      price: artwork.price,
-      description: artwork.description,
-      imageUrl: artwork.imageUrl
-    });
+    setEditForm({ ...artwork });
     setNewImage(null);
     setIsEditing(true);
     setMessage("");
   };
 
-  
   const handleInputChange = (e) => {
     setEditForm({ ...editForm, [e.target.name]: e.target.value });
   };
 
-  
+  // এডিট সাবমিট হ্যান্ডলার
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     setIsUpdating(true);
@@ -97,7 +82,6 @@ export default function ArtistDashboard() {
     try {
       let updatedImageUrl = editForm.imageUrl;
 
-      
       if (newImage) {
         const formData = new FormData();
         formData.append("image", newImage);
@@ -112,32 +96,27 @@ export default function ArtistDashboard() {
         }
       }
 
-      
       const updateData = {
         title: editForm.title,
         artistName: editForm.artistName,
         category: editForm.category,
         price: parseFloat(editForm.price),
         description: editForm.description,
-        imageUrl: updatedImageUrl
       };
 
-      const res = await fetch(`http://localhost:5000/api/artworks/update/${editForm._id}`, {
+      const res = await fetch(`${baseUrl}/api/artworks/update/${editForm._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updateData),
       });
-      
+
       const data = await res.json();
       if (data.success) {
         setMessage("Artwork updated successfully!");
-        setIsEditing(false); 
-        
-        // স্টেট থেকে সরাসরি ডাটা আপডেট করে দেওয়া যেন পুনরায় রিলোড বা এরর না আসে
+        setIsEditing(false);
         setArtworks((prev) =>
           prev.map((art) => (art._id === editForm._id ? { ...art, ...updateData } : art))
         );
-        
         setTimeout(() => setMessage(""), 3000);
       } else {
         setMessage("Failed to update.");
@@ -150,127 +129,61 @@ export default function ArtistDashboard() {
     }
   };
 
-  
-  if (isPending || isLoading) {
-    return <div className="p-10 text-center font-bold text-gray-500">Loading Dashboard...</div>;
-  }
-
-  
-  if (!session?.user?.email) {
-    return <div className="p-10 text-center font-bold text-red-500">Please login to access Artist Dashboard.</div>;
-  }
-
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-8">
-      <div className="max-w-5xl mx-auto bg-white p-6 rounded-lg shadow-md">
+    <div className="p-4 md:p-8 max-w-4xl mx-auto bg-gray-50 min-h-screen">
+      <h1 className="text-2xl font-bold mb-4">Artist Dashboard</h1>
+      {session?.user?.email && <p className="mb-6 text-gray-600">Email: {session.user.email}</p>}
+
+      {message && <div className="bg-green-200 text-green-800 p-3 mb-4 rounded">{message}</div>}
+
+      
+      {!session?.user ? (
+        <div className="p-10 text-center text-xl text-red-500">Please login to view your dashboard.</div>
+      ) : isEditing ? (
         
         
-        <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-200">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-800">Artist Dashboard</h1>
-            <p className="text-gray-500 text-sm">Managing: {session.user.email}</p>
-          </div>
-          <div className="bg-blue-100 text-blue-800 px-4 py-2 rounded-md font-bold">
-            Total Artworks: {artworks.length}
-          </div>
-        </div>
-
-        
-        {message && (
-          <div className="mb-4 p-3 bg-green-100 text-green-800 border border-green-300 rounded text-center font-medium">
-            {message}
-          </div>
-        )}
-
-        
-        {isEditing ? (
-          <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
-            <h2 className="text-xl font-bold mb-4">Edit Artwork</h2>
-            <form onSubmit={handleEditSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-bold mb-1">Title</label>
-                  <input type="text" name="title" value={editForm.title} onChange={handleInputChange} required className="w-full border p-2 rounded" />
-                </div>
-                <div>
-                  <label className="block text-sm font-bold mb-1">Artist Name</label>
-                  <input type="text" name="artistName" value={editForm.artistName} onChange={handleInputChange} required className="w-full border p-2 rounded" />
-                </div>
-                <div>
-                  <label className="block text-sm font-bold mb-1">Category</label>
-                  <select name="category" value={editForm.category} onChange={handleInputChange} required className="w-full border p-2 rounded bg-white">
-                    <option value="painting">Painting</option>
-                    <option value="digital">Digital Art</option>
-                    <option value="photography">Photography</option>
-                    <option value="sculpture">Sculpture</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-bold mb-1">Price ($)</label>
-                  <input type="number" name="price" step="0.01" value={editForm.price} onChange={handleInputChange} required className="w-full border p-2 rounded" />
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-bold mb-1">Description</label>
-                <textarea name="description" value={editForm.description} onChange={handleInputChange} required rows="3" className="w-full border p-2 rounded"></textarea>
-              </div>
-
-              <div>
-                <label className="block text-sm font-bold mb-1">Update Image (Optional)</label>
-                <input type="file" accept="image/*" onChange={(e) => setNewImage(e.target.files[0])} className="w-full border p-2 rounded bg-white" />
-              </div>
-
-              <div className="flex justify-end space-x-2 pt-4">
-                <button type="button" onClick={() => setIsEditing(false)} className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 font-bold">
-                  Cancel
-                </button>
-                <button type="submit" disabled={isUpdating} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-bold">
-                  {isUpdating ? "Saving..." : "Save Changes"}
-                </button>
-              </div>
-            </form>
-          </div>
-        ) : (
+        <form onSubmit={handleEditSubmit} className="bg-white p-6 border rounded shadow-sm flex flex-col gap-4">
+          <h2 className="text-xl font-bold">Edit Artwork</h2>
+          <input type="text" name="title" value={editForm.title} onChange={handleInputChange} placeholder="Title" className="border p-2" required />
+          <input type="text" name="artistName" value={editForm.artistName} onChange={handleInputChange} placeholder="Artist Name" className="border p-2" required />
+          <input type="number" name="price" value={editForm.price} onChange={handleInputChange} placeholder="Price" className="border p-2" required />
+          <textarea name="description" value={editForm.description} onChange={handleInputChange} placeholder="Description" className="border p-2" required />
+          <input type="file" onChange={(e) => setNewImage(e.target.files[0])} className="border p-2" />
           
-          <div className="overflow-x-auto">
-            {artworks.length === 0 ? (
-              <p className="text-center py-10 text-gray-500">No artwork found. Please add some.</p>
-            ) : (
-              <table className="w-full text-left border-collapse border border-gray-200">
-                <thead>
-                  <tr className="bg-gray-100">
-                    <th className="p-3 border">Image</th>
-                    <th className="p-3 border">Title</th>
-                    <th className="p-3 border">Price</th>
-                    <th className="p-3 border text-center">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {artworks.map((art) => (
-                    <tr key={art._id} className="hover:bg-gray-50">
-                      <td className="p-3 border">
-                        <img src={art.imageUrl} alt={art.title} className="w-16 h-16 object-cover rounded" />
-                      </td>
-                      <td className="p-3 border font-semibold">{art.title}</td>
-                      <td className="p-3 border font-bold text-blue-600">${art.price}</td>
-                      <td className="p-3 border text-center">
-                        <button onClick={() => startEditing(art)} className="bg-yellow-500 text-white px-3 py-1 rounded mr-2 hover:bg-yellow-600">
-                          Edit
-                        </button>
-                        <button onClick={() => handleDelete(art._id)} className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
+          <div className="flex gap-2 mt-2">
+            <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">{isUpdating ? "Saving..." : "Save"}</button>
+            <button type="button" onClick={() => setIsEditing(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
           </div>
-        )}
+        </form>
+      ) : (
+        
+        
+        <div className="flex flex-col gap-4">
+          {artworks.length === 0 && <p className="text-center text-gray-500 py-4">No artwork found.</p>}
+          
+          {artworks.map((art) => (
+            <div key={art._id} className="bg-white p-4 border rounded shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
+              
+            
+              <div className="flex items-center gap-4 w-full md:w-auto">
+                <img src={art.imageUrl} alt={art.title} className="w-20 h-20 object-cover rounded" />
+                <div>
+                  <h3 className="font-bold text-lg">{art.title}</h3>
+                  <p className="text-gray-600 text-sm">Category: {art.category}</p>
+                  <p className="text-blue-600 font-bold">${art.price}</p>
+                </div>
+              </div>
 
-      </div>
+             
+              <div className="flex gap-2 w-full md:w-auto">
+                <button onClick={() => startEditing(art)} className="bg-yellow-500 text-white px-4 py-2 rounded w-full md:w-auto">Edit</button>
+                <button onClick={() => handleDelete(art._id)} className="bg-red-500 text-white px-4 py-2 rounded w-full md:w-auto">Delete</button>
+              </div>
+
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 export default function AdminDashboard() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
-  const BACKEND_URL = "http://localhost:5000/api";
+  const BACKEND_URL = (`${baseUrl}/api`);
 
   
   useEffect(() => {
@@ -19,7 +20,7 @@ export default function AdminDashboard() {
         console.error("Error fetching users:", error);
         setLoading(false);
       });
-  }, []); 
+  },[BACKEND_URL]); 
   const handleRoleChange = async (userId, newRole) => {
     try {
       const res = await fetch(`${BACKEND_URL}/users/change-role/${userId}`, {
