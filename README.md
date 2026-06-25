@@ -1,36 +1,59 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# ArtHub – Online Art Marketplace
 
-## Getting Started
+ArtHub is a digital platform designed to bridge the gap between art lovers, collectors, buyers, and talented artists globally. Traditional art buying is often constrained by physical galleries and exhibitions. ArtHub democratizes access to art, enabling emerging artists to showcase their creations to a global audience while providing a secure, streamlined purchase and exploration experience for buyers. Built using the advanced MERN (MongoDB, Express.js, React, Node.js) stack, this project incorporates role-based access control, secure payment processing, real-time feedback, and comprehensive dashboards.
 
-First, run the development server:
+## 🔗 Live Links & Deployment
+- **Live Website URL:** [https://arthub-client-dun.vercel.app/]
+- **Client-side Repository:** [https://github.com/sanjidanabu/arthub-client]
+- **Server-side Repository:** [https://github.com/sanjidanabu/arthub-server]
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Key Features
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+### 👤 Role-Based Access Control (RBAC) & Dashboards
+The system dynamically adapts to three distinct roles, each having a dedicated and secure dashboard interface:
+- **Users (Buyers):**
+  - Browse a rich catalog of high-quality artworks and view detailed product pages.
+  - Make secure purchases seamlessly via Stripe payment integration.
+  - Express engagement through comments and interactive feedback on purchased pieces.
+  - Track complete order fulfillment and purchase history from their custom dashboard.
+- **Artists:**
+  - Full CRUD control to upload and manage their unique art portfolios (Title, medium, price, description, image).
+  - Ability to edit details or delete pieces from the marketplace.
+  - Dedicated sales history dashboard with tracking metrics to monitor earnings and popularity.
+- **Admin:**
+  - Comprehensive overview and management of all users, with options to adjust user roles (e.g., promoting a user to an artist or admin).
+  - Complete control over system integrity with the ability to delete policy-violating artworks.
+  - System-wide transaction overview and detailed analytical logs.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 🛡️ Security & Authentication
+- **Dual Authentication Modes:** Supports secure email/password registration along with seamless Google Social Login.
+- **Stateful Verification:** Employs **JSON Web Tokens (JWT)** issued upon authentication, stored securely, and passed via headers to protect private client-side routes and secure server-side API endpoints.
+- **Environment Isolation:** Sensitive deployment keys, database credentials, and payment API secrets are completely isolated using environment variables on both client and server layers.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🛠️ Technology Stack & Dependencies
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Frontend (Client-Side)
+The user interface is crafted with focus on contrast, professional space alignment, and an elegant layout suited for an art platform.
+- **React.js** – Component-based core architecture.
+- **React Router DOM** – For handling clean, declarative client-side routing.
+- **Stripe React Elements** – To handle secure, PCI-compliant payment card forms.
+- **Tailwind CSS** – For clean, high-contrast, modern responsive styles.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Backend & Database (Server-Side)
+A robust, modular MVC-inspired backend architecture built for speed and security.
+- **Node.js & Express.js** – Fast, unopinionated web framework for server routing.
+- **MongoDB & Mongoose** – NoSQL database modeling to store structured schemas for users, artworks, and payments.
+- **jsonwebtoken (JWT)** – For creating and validating secure access tokens.
+- **Stripe SDK** – Backend processing for managing intents and completing monetary transfers.
+- **dotenv** – Environment management to abstract configuration data.
+- **cors** – Cross-Origin Resource Sharing handling to restrict and whitelist safe origins.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 💻 Environment Setup Guide
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+To run this project locally, ensure you configure the following environmental files.
